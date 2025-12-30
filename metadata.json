@@ -1,0 +1,5 @@
+{
+  "name": "尝试导出 GUI - Low Involvement",
+  "description": "纯图形界面决策实验系统，支持32个试次的数据记录与Excel导出。",
+  "requestFramePermissions": []
+}
