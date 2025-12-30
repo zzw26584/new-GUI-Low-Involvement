@@ -1,11 +1,10 @@
 
 import React, { useState, useMemo } from 'react';
-import { Stage, TrialConfig, Product, SurveyData, ParticipantInfo, TrialResult } from './types';
+import { Stage, TrialConfig, Product, ParticipantInfo, TrialResult } from './types';
 import { TRIALS } from './data';
 
 /**
- * 外部定义 LikertScale 组件，解决组件重新渲染导致的跳转/焦点丢失问题。
- * 初始值为 null 时，所有按钮均不激活，解决了“未选”与“1分”重合的问题。
+ * 外部定义 LikertScale 组件
  */
 interface LikertProps {
   label: string;
@@ -54,7 +53,6 @@ const App: React.FC = () => {
   const [finalChoice, setFinalChoice] = useState<Product | null>(null);
   const [viewedProductIds, setViewedProductIds] = useState<string[]>([]);
 
-  // 1. 被试信息 - 使用字符串存储以防 1 变 0 偏移
   const [participant, setParticipant] = useState<ParticipantInfo>({
     id: '', runNumber: '', gender: '', age: ''
   });
@@ -64,7 +62,6 @@ const App: React.FC = () => {
   const [filterClicks, setFilterClicks] = useState<number>(0);
   const [allResults, setAllResults] = useState<TrialResult[]>([]);
 
-  // 2. 问卷数据 - 使用 null 初始化评分，使用字符串存储耗时
   const [survey, setSurvey] = useState<{
     importance: number | null;
     skillLevel: number | null;
@@ -76,9 +73,8 @@ const App: React.FC = () => {
     importance: null, skillLevel: null, satisfaction: null, efficiency: null, trust: null, timeSpent: ''
   });
 
-  // 纯数字输入处理逻辑
   const handleNumericInput = (field: string, value: string, isParticipant: boolean = true) => {
-    const sanitized = value.replace(/[^\d]/g, ''); // 过滤非数字
+    const sanitized = value.replace(/[^\d]/g, ''); 
     if (isParticipant) {
       setParticipant(prev => ({ ...prev, [field]: sanitized }));
     } else {
@@ -185,8 +181,6 @@ const App: React.FC = () => {
     link.click();
   };
 
-  // --- UI Sections ---
-
   if (stage === Stage.PARTICIPANT_INFO) {
     return (
       <div className="min-h-screen bg-slate-100 flex items-center justify-center p-6">
@@ -233,12 +227,26 @@ const App: React.FC = () => {
              <h2 className="text-2xl font-black text-slate-900">决策任务 ({trialIndex + 1}/{shuffledTrials.length})</h2>
              <div className="h-1.5 w-16 bg-blue-600 mx-auto rounded-full"></div>
           </div>
-          <div className="bg-blue-600 rounded-3xl p-8 text-white shadow-xl shadow-blue-100 relative overflow-hidden">
-            <div className="absolute -top-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
-            <p className="text-sm font-black opacity-80 mb-2 flex items-center gap-2 uppercase tracking-widest">Instruction</p>
-            <p className="text-xl font-bold leading-relaxed italic">"{currentTrial.instruction}"</p>
+          
+          <div className="space-y-6">
+            <div className="bg-blue-600 rounded-3xl p-8 text-white shadow-xl shadow-blue-100 relative overflow-hidden">
+              <div className="absolute -top-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
+              <p className="text-sm font-black opacity-80 mb-2 flex items-center gap-2 uppercase tracking-widest">情境描述 (Scenario)</p>
+              <p className="text-xl font-bold leading-relaxed italic">"{currentTrial.instruction}"</p>
+            </div>
+
+            <div className="bg-slate-900 rounded-3xl p-6 text-white border-4 border-blue-500/30 flex items-start gap-4">
+              <div className="w-12 h-12 bg-blue-500 rounded-2xl shrink-0 flex items-center justify-center text-2xl shadow-lg">💡</div>
+              <div>
+                <p className="text-xs font-black text-blue-400 uppercase tracking-widest mb-1">重要提醒 / KEY REMINDER</p>
+                <p className="text-base font-bold text-slate-100 leading-relaxed">
+                  请<span className="text-blue-400">尽可能代入真实生活</span>：根据上述条件，做出最<span className="underline underline-offset-4 decoration-blue-500">符合您日常生活习惯</span>的选择。
+                </p>
+              </div>
+            </div>
           </div>
-          <button onClick={startTrial} className="w-full bg-slate-900 text-white py-6 rounded-2xl font-black text-xl shadow-2xl active:scale-95 transition-all hover:bg-slate-800">开始挑选</button>
+
+          <button onClick={startTrial} className="w-full bg-slate-900 text-white py-6 rounded-2xl font-black text-xl shadow-2xl active:scale-95 transition-all hover:bg-slate-800">准备好了，开始挑选</button>
         </div>
       </div>
     );
